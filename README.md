@@ -18,3 +18,5 @@
     - majority vote: get the most common label
 
     -accuracy of predictions
+
+    -special cases: equal number of labels => which category?
