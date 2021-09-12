@@ -1,5 +1,8 @@
 # PythonCourse
 
+# How to junyper notebooks 
+https://www.jetbrains.com/help/pycharm/jupyter-notebook-support.html#get-started
+
 # K nearest neighbor:
     - 2 vectors x, y => axis
     - we have training samples and for each new sample we calculate the euclidian distance to every training sample

@@ -50,10 +50,31 @@ class KNN:
         # look for most common category
         prediction = np.bincount(data_category[:,0]).argmax()
         return prediction
-    def knn_algorithm(self):
-        self.predict(self.data_train, self.category_train, self.data_test[0])
+    def knn(self):
+        predictions = []
+        for point in data_test:
+            prediction = self.predict(self.data_train, self.category_train, point)
+            predictions.append(prediction)
+        return predictions
+    def accuracy(self, predictions):
+        """
+
+        :param predictions:
+        :return:
+        """
+        correct = 0
+        for i in range(len(predictions)):
+            if(predictions[i] == self.category_test[i]):
+                correct += 1
+        accuracy = correct / len(predictions) * 100
+        return accuracy
     def plot_histogram(self):
         pass
-
+    def plot_scatter(self):
+        pass
 knn_one = KNN(5, data_train, data_test, category_train, category_test)
-knn_one.knn_algorithm()
+pred1 = knn_one.knn()
+print(pred1)
+print(knn_one.category_test)
+accuracy = knn_one.accuracy(pred1)
+print(accuracy)
