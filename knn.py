@@ -1,5 +1,6 @@
 import numpy as np
-import matplotlib as plt
+from matplotlib import pyplot as plt
+from matplotlib.colors import ListedColormap
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
@@ -47,14 +48,14 @@ class KNN:
 
         # convert to numpy array and sort from lowest to highest distance
         sort_index = np.argsort(np.array(distances), axis=0)
+        #sort_index = np.sort(np.array(distances))
+        print(sort_index)
 
         # get only the k nearest values
-        #slice = sort_index[0:k]
-        #print(slice)
-        sort_index = np.delete(sort_index[:self.k], obj=1, axis=1)
+        sort_index_k = sort_index[0:self.k]
 
         # get corresponding data categories
-        data_category = np.take(self.category_train, sort_index)
+        data_category = np.take(self.category_train, sort_index_k)
 
         # look for most common category
         prediction = np.bincount(data_category[:, 0]).argmax()
@@ -78,14 +79,14 @@ class KNN:
         for i in range(len(predictions)):
             if predictions[i] == self.category_test[i]:
                 correct += 1
-        acc = correct / len(data_test) * 100
+        acc = correct / len(self.data_test) * 100
         return acc
 
     def plot_histogram(self):
         pass
 
-    def plot_scatter(self):
-        pass
+
+
 
 
 knn_one = KNN(21, data_train, data_test, category_train, category_test)
@@ -94,6 +95,10 @@ print(pred1)
 print(knn_one.category_test)
 accuracy = knn_one.accuracy(pred1)
 print(accuracy)
+
+plt.scatter(data[:, 0], data[:, 1], c=category, s=25)
+#plt.label('')
+plt.show()
 
 #TODO
 # was passiert, wenn k gerade ist und die Kategorie nicht eindeutig bestimmt/predicted werden kann
