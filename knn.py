@@ -112,7 +112,10 @@ p2_ = ax.scatter(data_test[:, 0], data_test[:, 1], c='red', s=25)
 plt.title('Data split into training and test samples')
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles, labels)
-ax.legend([p2, p2_], ['Training Data', 'Test Data'], scatterpoints=3)
+#ax.legend([p2, p2_], ['Training Data', 'Test Data'], scatterpoints=3)
+legend_1 = ax.legend([p2], ['Training Data'], scatterpoints=3, loc='lower left')
+ax.add_artist(legend_1)
+ax.legend([p2_], ['Test Data'], scatterpoints=1)
 plt.show()
 
 #TODO
