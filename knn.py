@@ -3,15 +3,6 @@ from matplotlib import pyplot as plt
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
-dataset = datasets.load_wine()
-data, category = dataset.data, dataset.target
-
-# print(data)
-# print(category)
-
-data_train, data_test, category_train, category_test = train_test_split(data, category, test_size=0.2,
-                                                                        random_state=1234)
-
 
 def euclidean_distance(x1, x2):
     """
@@ -23,12 +14,28 @@ def euclidean_distance(x1, x2):
 
 
 class KNN:
-    def __init__(self, k, d_train, d_test, c_train, c_test):
+    def __init__(self, k):
         self.k = k
-        self.data_train = d_train
-        self.data_test = d_test
-        self.category_train = c_train
-        self.category_test = c_test
+        self.data = self.category = self.data_train = self.data_test = self.category_train = self.category_test = None
+
+    def fit(self):
+        dataset = datasets.load_wine()
+        self.data, self.category = dataset.data, dataset.target
+        self.data_train, self.data_test, self.category_train, self.category_test = train_test_split(self.data,
+                                                                                                    self.category,
+                                                                                                    test_size=0.2,
+                                                                                                    random_state=1234)
+
+    def knn(self):
+        self.fit()
+        predictions = []
+
+        for test_point in self.data_test:
+            prediction = self.predict(test_point)
+            predictions.append(prediction)
+
+        self.accuracy(predictions)
+        self.plot_data()
 
     def predict(self, test_point):
         """
@@ -47,7 +54,6 @@ class KNN:
 
         # convert to numpy array and sort from lowest to highest distance
         sort_index = np.argsort(np.array(distances), axis=0)
-        #sort_index = np.sort(np.array(distances))
         print(sort_index)
 
         # get only the k nearest values
@@ -61,53 +67,41 @@ class KNN:
 
         return prediction
 
-    def knn(self):
-        predictions = []
-        for test_point in data_test:
-            prediction = self.predict(test_point)
-            predictions.append(prediction)
-        return predictions
-
     def accuracy(self, predictions):
         """
-
+        calculates accuracy of predictions by checking if the predictions equals the categories of the test samples
         :param predictions:
         :return:
         """
+        #####################
         correct = 0
         for i in range(len(predictions)):
             if predictions[i] == self.category_test[i]:
                 correct += 1
         acc = correct / len(self.data_test) * 100
-        return acc
+        print(acc)
+
+    def plot_data(self):
+        fig, ax = plt.subplots()
+        ax.scatter(self.data[:, 0], self.data[:, 1], c=self.category, edgecolor='black', s=35)
+        plt.title('Data split into three categories')
+        plt.show()
+
+        fig2, ax = plt.subplots()
+        ax.scatter(self.data_train[:, 0], self.data_train[:, 1], c=self.category_train, edgecolor='black', s=35)
+        p = ax.scatter(self.data_test[:, 0], self.data_test[:, 1], c='red', edgecolor='black', s=35)
+        plt.title('Data split into training and test samples')
+        ax.legend([p], ['Test Data'])
+        plt.show()
 
     def plot_histogram(self):
         pass
 
 
-def plot_data():
-    fig, ax = plt.subplots()
-    ax.scatter(data[:, 0], data[:, 1], c=category, s=25)
-    plt.title('Data split into three categories')
-    plt.show()
-
-    fig2, ax = plt.subplots()
-    ax.scatter(data_train[:, 0], data_train[:, 1], c=category_train, s=25)
-    p = ax.scatter(data_test[:, 0], data_test[:, 1], c='red', s=25)
-    plt.title('Data split into training and test samples')
-    ax.legend([p], ['Test Data'])
-    plt.show()
-
-
-knn_one = KNN(21, data_train, data_test, category_train, category_test)
-pred1 = knn_one.knn()
-print(pred1)
-print(knn_one.category_test)
-accuracy = knn_one.accuracy(pred1)
-print(accuracy)
-plot_data()
+if __name__ == '__main__':
+    knn = KNN(20)
+    knn.knn()
 
 
 #TODO
 # was passiert, wenn k gerade ist und die Kategorie nicht eindeutig bestimmt/predicted werden kann
-# min k = 3
