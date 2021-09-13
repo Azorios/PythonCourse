@@ -95,18 +95,27 @@ print(pred1)
 print(knn_one.category_test)
 accuracy = knn_one.accuracy(pred1)
 print(accuracy)
-
+"""
 fig, ax = plt.subplots()
+
+
 p1 = ax.scatter(data[:, 0], data[:, 1], c=category, s=25)
 plt.title('Data split into three categories')
 ax.legend([p1], ['Categories'], scatterpoints=3)
 plt.show()
+"""
+
 
 fig2, ax = plt.subplots()
 p2 = ax.scatter(data_train[:, 0], data_train[:, 1], c=category_train, s=25)
 p2_ = ax.scatter(data_test[:, 0], data_test[:, 1], c='red', s=25)
 plt.title('Data split into training and test samples')
-ax.legend([p2, p2_], ['Training Data', 'Test Data'], scatterpoints=3)
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles, labels)
+#ax.legend([p2, p2_], ['Training Data', 'Test Data'], scatterpoints=3)
+legend_1 = ax.legend([p2], ['Training Data'], scatterpoints=3, loc='lower left')
+ax.add_artist(legend_1)
+ax.legend([p2_], ['Test Data'], scatterpoints=1)
 plt.show()
 
 #TODO

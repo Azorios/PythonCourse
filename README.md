@@ -11,15 +11,15 @@ https://www.jetbrains.com/help/pycharm/jupyter-notebook-support.html#get-started
         e.g. k=3 blue=2 green=1 => label=blue
 
 #TODO
-    - euclidian distance function:
+    X - euclidian distance function:
         -of 2 points: d = sqrt((x2-x1)**2 + (y2-y1)**2)
         -general case: look at formula => x1,x2 : np.sqrt(np.sum((x1-x2)**2))
-    - generate training sample
+    X - generate training sample
     - plot training sample
-    - compute distances from new sample to training samples
+    X - compute distances from new sample to training samples
     - get k nearest samples and labels
-    - majority vote: get the most common label
+    X - majority vote: get the most common label
 
-    -accuracy of predictions
+    X -accuracy of predictions
 
     -special cases: equal number of labels => which category?
