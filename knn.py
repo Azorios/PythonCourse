@@ -95,13 +95,16 @@ print(pred1)
 print(knn_one.category_test)
 accuracy = knn_one.accuracy(pred1)
 print(accuracy)
-
+"""
 fig, ax = plt.subplots()
+
 
 p1 = ax.scatter(data[:, 0], data[:, 1], c=category, s=25)
 plt.title('Data split into three categories')
 ax.legend([p1], ['Categories'], scatterpoints=3)
 plt.show()
+"""
+
 
 fig2, ax = plt.subplots()
 p2 = ax.scatter(data_train[:, 0], data_train[:, 1], c=category_train, s=25)
