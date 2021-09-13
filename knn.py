@@ -1,10 +1,9 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.colors import ListedColormap
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
-dataset = datasets.load_iris()
+dataset = datasets.load_wine()
 data, category = dataset.data, dataset.target
 
 # print(data)
@@ -16,7 +15,7 @@ data_train, data_test, category_train, category_test = train_test_split(data, ca
 
 def euclidean_distance(x1, x2):
     """
-    returns the euclidian distance of two given points x1,x2
+    returns the euclidean distance of two given points x1,x2
     :param x1: point 1
     :param x2: point 2
     """
@@ -31,19 +30,19 @@ class KNN:
         self.category_train = c_train
         self.category_test = c_test
 
-    def predict(self, train_point):
+    def predict(self, test_point):
         """
         predicts the category of the training point based on the k nearest neighbors to it
         :param data_train: data points used to predict the training points category
         :param category_train: categories of the data points
-        :param train_point: point the categories will be predicted for
+        :param test_point: point the categories will be predicted for
         :return: the category prediction
         """
 
         distances = []
         # calculate all euclidean distances to the train point
         for index in range(len(self.data_train)):
-            dist = euclidean_distance(data[index], train_point)
+            dist = euclidean_distance(self.data_train[index], test_point)
             distances.append([dist, index])
 
         # convert to numpy array and sort from lowest to highest distance
@@ -64,8 +63,8 @@ class KNN:
 
     def knn(self):
         predictions = []
-        for point in data_test:
-            prediction = self.predict(point)
+        for test_point in data_test:
+            prediction = self.predict(test_point)
             predictions.append(prediction)
         return predictions
 
@@ -86,25 +85,28 @@ class KNN:
         pass
 
 
+def plot_data():
+    fig, ax = plt.subplots()
+    ax.scatter(data[:, 0], data[:, 1], c=category, s=25)
+    plt.title('Data split into three categories')
+    plt.show()
+
+    fig2, ax = plt.subplots()
+    ax.scatter(data_train[:, 0], data_train[:, 1], c=category_train, s=25)
+    p = ax.scatter(data_test[:, 0], data_test[:, 1], c='red', s=25)
+    plt.title('Data split into training and test samples')
+    ax.legend([p], ['Test Data'])
+    plt.show()
+
+
 knn_one = KNN(21, data_train, data_test, category_train, category_test)
 pred1 = knn_one.knn()
 print(pred1)
 print(knn_one.category_test)
 accuracy = knn_one.accuracy(pred1)
 print(accuracy)
+plot_data()
 
-
-fig, ax = plt.subplots()
-ax.scatter(data[:, 0], data[:, 1], c=category, s=25)
-plt.title('Data split into three categories')
-plt.show()
-
-fig2, ax = plt.subplots()
-ax.scatter(data_train[:, 0], data_train[:, 1], c=category_train, s=25)
-p = ax.scatter(data_test[:, 0], data_test[:, 1], c='red', s=25)
-plt.title('Data split into training and test samples')
-ax.legend([p], ['Test Data'])
-plt.show()
 
 #TODO
 # was passiert, wenn k gerade ist und die Kategorie nicht eindeutig bestimmt/predicted werden kann
