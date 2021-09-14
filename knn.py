@@ -3,12 +3,44 @@ from matplotlib import pyplot as plt
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
+
+def euclidean_distance(x1, x2):
+    """
+    returns the euclidean distance of two given points x1,x2
+    :param x1: point 1
+    :param x2: point 2
+    """
+    return np.sqrt(np.sum((x1 - x2) ** 2))
+
+
+def plot_acc_bar(acc_list, bins):
+    plt.title("k-values and their accuracy")
+    plt.ylabel("accuracy (%)")
+    plt.xlabel("k-value")
+    plt.bar(np.arange(bins), acc_list, align='center', width=0.1)
+    plt.show()
+
+
+def plot_acc_hist(acc_list, bins):
+    plt.title("distribution of accuracy for all possible values of k")
+    plt.xlabel("accuracy (%)")
+    plt.ylabel("amount")
+    plt.hist(acc_list, 100)
+    plt.show()
+
+
 class KNN:
     def __init__(self, k):
+        """
+        constructor
+        """
         self.k = k
         self.data = self.category = self.data_train = self.data_test = self.category_train = self.category_test = None
 
     def fit(self):
+        """
+        load dataset and split into training and test samples
+        """
         dataset = datasets.load_iris()
         self.data, self.category = dataset.data, dataset.target
         self.data_train, self.data_test, self.category_train, self.category_test = train_test_split(self.data,
@@ -17,15 +49,19 @@ class KNN:
                                                                                                     random_state=1234)
 
     def knn(self):
+        """
+        calls all other functions for the knn algorithm
+        """
+
+        # get data
         self.fit()
-        predictions = []
 
-        for test_point in self.data_test:
-            prediction = self.predict(test_point)
-            predictions.append(prediction)
+        # use list comprehension to predict each test sample's category
+        predictions = [self.predict(test_point) for test_point in self.data_test]
 
+        # get accuracy of predictions
         self.accuracy(predictions)
-        #self.plot_data()
+
         return predictions
 
     def predict(self, test_point):
@@ -37,11 +73,11 @@ class KNN:
         :return: the category prediction
         """
 
-        distances = []
         # calculate all euclidean distances to the train point
-        for index in range(len(self.data_train)):
-            dist = self.euclidean_distance(self.data_train[index], test_point)
-            distances.append([dist, index])
+        distances = []
+        for i in range(len(self.data_train)):
+            dist = euclidean_distance(self.data_train[i], test_point)
+            distances.append([dist, i])
 
         # convert to numpy array and sort from lowest to highest distance
         sort_index = np.argsort(np.array(distances), axis=0)
@@ -57,26 +93,19 @@ class KNN:
 
         return prediction
 
-    def euclidean_distance(self, x1, x2):
-        """
-        returns the euclidean distance of two given points x1,x2
-        :param x1: point 1
-        :param x2: point 2
-        """
-        return np.sqrt(np.sum((x1 - x2) ** 2))
-
     def accuracy(self, predictions):
         """
         calculates accuracy of predictions by checking if the predictions equals the categories of the test samples
         :param predictions:
         :return:
         """
-        #####################
-        correct = 0
-        for i in range(len(predictions)):
-            if predictions[i] == self.category_test[i]:
-                correct += 1
-        acc = correct / len(self.data_test) * 100
+
+        # count the number of correct predictions
+        correct = [i for i in range(len(predictions)) if predictions[i] == self.category_test[i]]
+
+        # calculate accuracy of predictions
+        acc = len(correct) / len(self.data_test) * 100
+
         return acc
 
     def plot_data(self):
@@ -107,24 +136,21 @@ class KNN:
             acc_list.append(acc)
         # plot histogram
         print(acc_list)
-        self.plot_acc_bar(acc_list, len(self.data_train)-1)
-        self.plot_acc_hist(acc_list, len(self.data_train)-1)
+        plot_acc_bar(acc_list, len(self.data_train)-1)
+        plot_acc_hist(acc_list, len(self.data_train)-1)
         # set k back to its init value
         self.k = k_save
 
-    def plot_acc_bar(self, acc_list, bins):
-        plt.title("k-values and their accuracy")
-        plt.ylabel("accuracy (%)")
-        plt.xlabel("k-value")
-        plt.bar(np.arange(bins), acc_list, align='center', width=0.1)
-        plt.show()
-    def plot_acc_hist(self, acc_list, bins):
-        plt.title("distribution of accuracy for all possible values of k")
-        plt.xlabel("accuracy (%)")
-        plt.ylabel("amount")
-        plt.hist(acc_list, 100)
-        plt.show()
+
 if __name__ == '__main__':
+    # create instance of class
     knn = KNN(5)
+
+    # call function to start algorithm
     knn.knn()
+
+    # plot data samples
+    knn.plot_data()
+
+    # plot histograms to compare accuracy levels with different k values
     knn.compare_k()
