@@ -6,11 +6,29 @@ from sklearn.model_selection import train_test_split
 
 def euclidean_distance(x1, x2):
     """
-    returns the euclidean distance of two given points x1,x2
     :param x1: point 1
     :param x2: point 2
+    :return: euclidean distance of two given points x1,x2
     """
     return np.sqrt(np.sum((x1 - x2) ** 2))
+
+
+def manhattan_distance(x1, x2):
+    """
+    :param x1: point 1
+    :param x2: point 2
+    :return: manhattan distance of two given points x1,x2
+    """
+    return np.sum(np.abs(x1 - x2))
+
+
+def chebyshev_distance(x1, x2):
+    """
+    :param x1:
+    :param x2:
+    :return: chebyshev distance of two given points x1,x2
+    """
+    return np.max(np.abs(x1 - x2))
 
 
 def plot_acc_bar(acc_list, bins):
@@ -26,20 +44,16 @@ def plot_acc_bar(acc_list, bins):
 
 
 def plot_acc_hist(acc_list):
+    """
+    plots distribution of accuracy for all possible k values
+    :param acc_list: list of accuracies of the different distance functions
+    """
     plt.figure(figsize=(7, 5))
-    plt.title("distribution of accuracy for all possible values of k")
+    plt.title("distribution of accuracy for all possible k values")
     plt.xlabel("accuracy (%)")
     plt.ylabel("k value")
     plt.hist(acc_list, 100, width=1.5)
     plt.show()
-
-
-def manhattan_distance(x1, x2):
-    return np.sum(np.abs(x1 - x2))
-
-
-def chebyshev_distance(x1, x2):
-    return np.max(np.abs(x1 - x2))
 
 
 class KNN:
@@ -159,7 +173,7 @@ class KNN:
 
         # plot histogram to compare accuracy levels with different k values
         plot_acc_bar(acc_list, len(self.data_train)-1)
-        #plot_acc_hist(acc_list)
+        # plot_acc_hist(acc_list)
 
     def compare_distance_function(self):
         """
