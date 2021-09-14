@@ -14,22 +14,25 @@ def euclidean_distance(x1, x2):
 
 
 def plot_acc_bar(acc_list, bins):
+    """
+    plots accuracy of k values represented in bars
+    """
     plt.title("k-values and their accuracy")
     plt.ylabel("accuracy (%)")
     plt.xlabel("k-value")
-    plt.bar(np.arange(bins), acc_list, align='center', width=0.1)
+    plt.bar(np.arange(1, bins, 5), acc_list, align='center', width=0.2, tick_label=np.arange(1, bins, 5))
     plt.show()
 
 
-def plot_acc_hist(acc_list, bins):
+def plot_acc_hist(acc_list):
     plt.title("distribution of accuracy for all possible values of k")
     plt.xlabel("accuracy (%)")
-    plt.ylabel("amount")
+    plt.ylabel("k value")
     plt.hist(acc_list, 100)
     plt.show()
 
 
-def manhatten_distance(x1, x2):
+def manhattan_distance(x1, x2):
     return np.sum(np.abs(x1 - x2))
 
 
@@ -65,7 +68,7 @@ class KNN:
         self.fit()
 
         # use list comprehension to predict each test sample's category
-        predictions = [self.predict(test_point) for test_point in self.data_test]
+        predictions = [self.predict(test_point, dist_func) for test_point in self.data_test]
 
         # get accuracy of predictions
         self.accuracy(predictions)
@@ -75,6 +78,7 @@ class KNN:
     def predict(self, test_point, dist_function):
         """
         predicts the category of the training point based on the k nearest neighbors to it
+        :param dist_function: the function that is used to calculate the distance
         :param data_train: data points used to predict the training points category
         :param category_train: categories of the data points
         :param test_point: point the categories will be predicted for
@@ -117,11 +121,17 @@ class KNN:
         return acc
 
     def plot_data(self):
+        """
+        plots dataset where each category has a different color; test samples are represented in red
+        """
+
+        # plot whole dataset as scatter plot
         fig, ax = plt.subplots()
         ax.scatter(self.data[:, 0], self.data[:, 1], c=self.category, edgecolor='black', s=35)
         plt.title('Data split into three categories')
         plt.show()
 
+        # plot dataset seperated into train and test samples; train samples keep their category color
         fig2, ax = plt.subplots()
         ax.scatter(self.data_train[:, 0], self.data_train[:, 1], c=self.category_train, edgecolor='black', s=35)
         p = ax.scatter(self.data_test[:, 0], self.data_test[:, 1], c='red', edgecolor='black', s=35)
@@ -131,59 +141,48 @@ class KNN:
 
     def compare_k(self):
         """
-        plots all possible values for k in a histogram to compare which values of k provide the best accuracy for the
-        given dataset
+        plots all possible values for k in steps of 5 in a histogram to compare which k values provide the best accuracy
+        for the given dataset
         """
-        k_save = self.k
+
         acc_list = []
-        for i in range(1, len(self.data_train)):
+        for i in range(1, len(self.data_train)+1, 5):
             #
             self.k = i
+            print(i)
             predictions = self.knn()
             acc = self.accuracy(predictions)
             acc_list.append(acc)
-        # plot histogram
+
+        # plot histograms to compare accuracy levels with different k values
         print(acc_list)
         plot_acc_bar(acc_list, len(self.data_train)-1)
-        plot_acc_hist(acc_list, len(self.data_train)-1)
-        # set k back to its init value
-        self.k = k_save
-
-        """
-        plots all possible values for k in a histogram to compare which values of k provide the best accuracy for the
-        given dataset
-        """
-        k_save = self.k
-        acc_list = []
-        for i in range(1, len(self.data_train)):
-            #
-            self.k = i
-            predictions = self.knn()
-            acc = self.accuracy(predictions)
-            acc_list.append(acc)
-        # plot histogram
-        print(acc_list)
-        plot_acc_bar(acc_list, len(self.data_train) - 1)
-        plot_acc_hist(acc_list, len(self.data_train) - 1)
-        # set k back to its init value
-        self.k = k_save
+        plot_acc_hist(acc_list)
 
     def compare_distance_function(self):
-        acc_eucl = self.accuracy(self.knn())
-        acc_manh = self.accuracy(self.knn(manhatten_distance))
-        acc_cheb = self.accuracy(self.knn(chebyshev_distance))
-        acc_list = [acc_eucl, acc_manh, acc_cheb]
-        print(acc_list)
-        print("hi",len(acc_list))
+        """
+        plots accuracy of k values represented in bars
+        """
 
+        # get accuracy of the different distance functions
+        acc_euclidean = self.accuracy(self.knn())
+        acc_manhattan = self.accuracy(self.knn(manhattan_distance))
+        acc_chebyshev = self.accuracy(self.knn(chebyshev_distance))
+
+        # save accuracies in list
+        acc_list = [acc_euclidean, acc_manhattan, acc_chebyshev]
+        print("acc list:", acc_list)
+
+        # values for bar plot
         ind = np.arange(3)
         width = 0.35
 
-        plt.bar(ind, acc_list, width, color='green', tick_label=('euclidean', 'manhatten', 'chebyshev'))
+        # plot comparison represented in bars
+        plt.bar(ind, acc_list, width, color='green', tick_label=('Euclidean', 'Manhattan', 'Chebyshev'))
         plt.title(f"Accuracy Comparison for k={self.k}")
         plt.ylabel("accuracy (%)")
-        #plt.tick_label(ind, ('euclidean', 'manhatten', 'chebyshev'))
         plt.show()
+
 
 if __name__ == '__main__':
     # create instance of class
@@ -195,6 +194,8 @@ if __name__ == '__main__':
     # plot data samples
     knn.plot_data()
 
-    # plot histograms to compare accuracy levels with different k values
+    # compare different k values
     knn.compare_k()
+
+    # compare different distance functions
     knn.compare_distance_function()
