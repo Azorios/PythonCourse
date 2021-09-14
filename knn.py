@@ -3,23 +3,13 @@ from matplotlib import pyplot as plt
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
-
-def euclidean_distance(x1, x2):
-    """
-    returns the euclidean distance of two given points x1,x2
-    :param x1: point 1
-    :param x2: point 2
-    """
-    return np.sqrt(np.sum((x1 - x2) ** 2))
-
-
 class KNN:
     def __init__(self, k):
         self.k = k
         self.data = self.category = self.data_train = self.data_test = self.category_train = self.category_test = None
 
     def fit(self):
-        dataset = datasets.load_wine()
+        dataset = datasets.load_iris()
         self.data, self.category = dataset.data, dataset.target
         self.data_train, self.data_test, self.category_train, self.category_test = train_test_split(self.data,
                                                                                                     self.category,
@@ -35,7 +25,8 @@ class KNN:
             predictions.append(prediction)
 
         self.accuracy(predictions)
-        self.plot_data()
+        #self.plot_data()
+        return predictions
 
     def predict(self, test_point):
         """
@@ -49,12 +40,11 @@ class KNN:
         distances = []
         # calculate all euclidean distances to the train point
         for index in range(len(self.data_train)):
-            dist = euclidean_distance(self.data_train[index], test_point)
+            dist = self.euclidean_distance(self.data_train[index], test_point)
             distances.append([dist, index])
 
         # convert to numpy array and sort from lowest to highest distance
         sort_index = np.argsort(np.array(distances), axis=0)
-        print(sort_index)
 
         # get only the k nearest values
         sort_index_k = sort_index[0:self.k]
@@ -66,6 +56,14 @@ class KNN:
         prediction = np.bincount(data_category[:, 0]).argmax()
 
         return prediction
+
+    def euclidean_distance(self, x1, x2):
+        """
+        returns the euclidean distance of two given points x1,x2
+        :param x1: point 1
+        :param x2: point 2
+        """
+        return np.sqrt(np.sum((x1 - x2) ** 2))
 
     def accuracy(self, predictions):
         """
@@ -79,7 +77,7 @@ class KNN:
             if predictions[i] == self.category_test[i]:
                 correct += 1
         acc = correct / len(self.data_test) * 100
-        print(acc)
+        return acc
 
     def plot_data(self):
         fig, ax = plt.subplots()
@@ -94,14 +92,39 @@ class KNN:
         ax.legend([p], ['Test Data'])
         plt.show()
 
-    def plot_histogram(self):
-        pass
+    def compare_k(self):
+        """
+        plots all possible values for k in a histogram to compare which values of k provide the best accuracy for the
+        given dataset
+        """
+        k_save = self.k
+        acc_list = []
+        for i in range(1, len(self.data_train)):
+            #
+            self.k = i
+            predictions = self.knn()
+            acc = self.accuracy(predictions)
+            acc_list.append(acc)
+        # plot histogram
+        print(acc_list)
+        self.plot_acc_bar(acc_list, len(self.data_train)-1)
+        self.plot_acc_hist(acc_list, len(self.data_train)-1)
+        # set k back to its init value
+        self.k = k_save
 
-
+    def plot_acc_bar(self, acc_list, bins):
+        plt.title("k-values and their accuracy")
+        plt.ylabel("accuracy (%)")
+        plt.xlabel("k-value")
+        plt.bar(np.arange(bins), acc_list, align='center', width=0.1)
+        plt.show()
+    def plot_acc_hist(self, acc_list, bins):
+        plt.title("distribution of accuracy for all possible values of k")
+        plt.xlabel("accuracy (%)")
+        plt.ylabel("amount")
+        plt.hist(acc_list, 100)
+        plt.show()
 if __name__ == '__main__':
-    knn = KNN(20)
+    knn = KNN(5)
     knn.knn()
-
-
-#TODO
-# was passiert, wenn k gerade ist und die Kategorie nicht eindeutig bestimmt/predicted werden kann
+    knn.compare_k()
