@@ -29,6 +29,14 @@ def plot_acc_hist(acc_list, bins):
     plt.show()
 
 
+def manhatten_distance(x1, x2):
+    return np.sum(np.abs(x1 - x2))
+
+
+def chebyshev_distance(x1, x2):
+    return np.max(np.abs(x1 - x2))
+
+
 class KNN:
     def __init__(self, k):
         """
@@ -48,7 +56,7 @@ class KNN:
                                                                                                     test_size=0.2,
                                                                                                     random_state=1234)
 
-    def knn(self):
+    def knn(self, dist_func = euclidean_distance):
         """
         calls all other functions for the knn algorithm
         """
@@ -64,7 +72,7 @@ class KNN:
 
         return predictions
 
-    def predict(self, test_point):
+    def predict(self, test_point, dist_function):
         """
         predicts the category of the training point based on the k nearest neighbors to it
         :param data_train: data points used to predict the training points category
@@ -76,7 +84,7 @@ class KNN:
         # calculate all euclidean distances to the train point
         distances = []
         for i in range(len(self.data_train)):
-            dist = euclidean_distance(self.data_train[i], test_point)
+            dist = dist_function(self.data_train[i], test_point)
             distances.append([dist, i])
 
         # convert to numpy array and sort from lowest to highest distance
@@ -141,6 +149,41 @@ class KNN:
         # set k back to its init value
         self.k = k_save
 
+        """
+        plots all possible values for k in a histogram to compare which values of k provide the best accuracy for the
+        given dataset
+        """
+        k_save = self.k
+        acc_list = []
+        for i in range(1, len(self.data_train)):
+            #
+            self.k = i
+            predictions = self.knn()
+            acc = self.accuracy(predictions)
+            acc_list.append(acc)
+        # plot histogram
+        print(acc_list)
+        plot_acc_bar(acc_list, len(self.data_train) - 1)
+        plot_acc_hist(acc_list, len(self.data_train) - 1)
+        # set k back to its init value
+        self.k = k_save
+
+    def compare_distance_function(self):
+        acc_eucl = self.accuracy(self.knn())
+        acc_manh = self.accuracy(self.knn(manhatten_distance))
+        acc_cheb = self.accuracy(self.knn(chebyshev_distance))
+        acc_list = [acc_eucl, acc_manh, acc_cheb]
+        print(acc_list)
+        print("hi",len(acc_list))
+
+        ind = np.arange(3)
+        width = 0.35
+
+        plt.bar(ind, acc_list, width, color='green', tick_label=('euclidean', 'manhatten', 'chebyshev'))
+        plt.title(f"Accuracy Comparison for k={self.k}")
+        plt.ylabel("accuracy (%)")
+        #plt.tick_label(ind, ('euclidean', 'manhatten', 'chebyshev'))
+        plt.show()
 
 if __name__ == '__main__':
     # create instance of class
@@ -154,3 +197,4 @@ if __name__ == '__main__':
 
     # plot histograms to compare accuracy levels with different k values
     knn.compare_k()
+    knn.compare_distance_function()
