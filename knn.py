@@ -160,7 +160,6 @@ class KNN:
         plots all possible values for k in steps of 5 in a histogram to compare which k values provide the best accuracy
         for the given dataset
         """
-
         acc_list = []
         for i in range(1, len(self.data_train)+1, 5):
             # set k value to i
