@@ -187,7 +187,6 @@ class KNN:
 
         # save accuracies in list
         acc_list = [acc_euclidean, acc_manhattan, acc_chebyshev]
-        print("acc list:", acc_list)
 
         # values for bar plot
         ind = np.arange(3)
