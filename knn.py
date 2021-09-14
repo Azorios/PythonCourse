@@ -17,18 +17,20 @@ def plot_acc_bar(acc_list, bins):
     """
     plots accuracy of k values represented in bars
     """
+    plt.figure(figsize=(15, 6))
     plt.title("k-values and their accuracy")
     plt.ylabel("accuracy (%)")
     plt.xlabel("k-value")
-    plt.bar(np.arange(1, bins, 5), acc_list, align='center', width=0.2, tick_label=np.arange(1, bins, 5))
+    plt.bar(np.arange(1, bins, 5), acc_list, width=1.5, tick_label=np.arange(1, bins, 5))
     plt.show()
 
 
 def plot_acc_hist(acc_list):
+    plt.figure(figsize=(7, 5))
     plt.title("distribution of accuracy for all possible values of k")
     plt.xlabel("accuracy (%)")
     plt.ylabel("k value")
-    plt.hist(acc_list, 100)
+    plt.hist(acc_list, 100, width=1.5)
     plt.show()
 
 
@@ -147,17 +149,17 @@ class KNN:
 
         acc_list = []
         for i in range(1, len(self.data_train)+1, 5):
-            #
+            # set k value to i
             self.k = i
-            print(i)
+
+            # predict category and calculate accuracy for k value
             predictions = self.knn()
             acc = self.accuracy(predictions)
             acc_list.append(acc)
 
-        # plot histograms to compare accuracy levels with different k values
-        print(acc_list)
+        # plot histogram to compare accuracy levels with different k values
         plot_acc_bar(acc_list, len(self.data_train)-1)
-        plot_acc_hist(acc_list)
+        #plot_acc_hist(acc_list)
 
     def compare_distance_function(self):
         """
@@ -178,6 +180,7 @@ class KNN:
         width = 0.35
 
         # plot comparison represented in bars
+        plt.figure(figsize=(5, 6))
         plt.bar(ind, acc_list, width, color='green', tick_label=('Euclidean', 'Manhattan', 'Chebyshev'))
         plt.title(f"Accuracy Comparison for k={self.k}")
         plt.ylabel("accuracy (%)")
