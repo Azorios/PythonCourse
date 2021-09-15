@@ -10,8 +10,7 @@ def euclidean_distance(x1, x2):
     :param x2: point 2
     :return: euclidean distance of two given points x1,x2
     """
-    return np.sqrt(np.sum((x1 - x2) ** 2))
-
+    return np.sqrt(np.sum((x2 - x1) ** 2))
 
 def manhattan_distance(x1, x2):
     """
@@ -21,7 +20,6 @@ def manhattan_distance(x1, x2):
     """
     return np.sum(np.abs(x1 - x2))
 
-
 def chebyshev_distance(x1, x2):
     """
     :param x1:
@@ -30,18 +28,16 @@ def chebyshev_distance(x1, x2):
     """
     return np.max(np.abs(x1 - x2))
 
-
 def plot_acc_bar(acc_list, bins):
     """
     plots accuracy of k values represented in bars
     """
     plt.figure(figsize=(15, 6))
-    plt.title("k-values and their accuracy")
-    plt.ylabel("accuracy (%)")
-    plt.xlabel("k-value")
+    plt.title(f"k-values and their accuracy")
+    plt.ylabel(f"accuracy (%)")
+    plt.xlabel(f"k-value")
     plt.bar(np.arange(1, bins, 5), acc_list, width=1.5, tick_label=np.arange(1, bins, 5))
     plt.show()
-
 
 def plot_acc_hist(acc_list):
     """
@@ -49,12 +45,11 @@ def plot_acc_hist(acc_list):
     :param acc_list: list of accuracies of the different distance functions
     """
     plt.figure(figsize=(7, 5))
-    plt.title("distribution of accuracy for all possible k values")
-    plt.xlabel("accuracy (%)")
-    plt.ylabel("k value")
+    plt.title(f"distribution of accuracy for k values")
+    plt.xlabel(f"accuracy (%)")
+    plt.ylabel(f"k value")
     plt.hist(acc_list, 100, width=1.5)
     plt.show()
-
 
 class KNN:
     def __init__(self, k):
@@ -68,7 +63,7 @@ class KNN:
         """
         load dataset and split into training and test samples
         """
-        dataset = datasets.load_iris()
+        dataset = datasets.load_iris() #load_wine, load_breast_cancer
         self.data, self.category = dataset.data, dataset.target
         self.data_train, self.data_test, self.category_train, self.category_test = train_test_split(self.data,
                                                                                                     self.category,
@@ -105,7 +100,7 @@ class KNN:
         distances = []
         for i in range(len(self.data_train)):
             dist = dist_function(self.data_train[i], test_point)
-            distances.append([dist, i])
+            distances.append([dist])
 
         # convert to numpy array and sort from lowest to highest distance
         sort_index = np.argsort(np.array(distances), axis=0)
@@ -116,7 +111,7 @@ class KNN:
         # get corresponding data categories
         data_category = np.take(self.category_train, sort_index_k)
 
-        # look for most common category
+        # look for most common category. In tie case chooses the category that reaches the max first.
         prediction = np.bincount(data_category[:, 0]).argmax()
 
         return prediction
@@ -172,7 +167,7 @@ class KNN:
 
         # plot histogram to compare accuracy levels with different k values
         plot_acc_bar(acc_list, len(self.data_train)-1)
-        # plot_acc_hist(acc_list)
+        plot_acc_hist(acc_list)
 
     def compare_distance_function(self):
         """
@@ -197,7 +192,6 @@ class KNN:
         plt.title(f"Accuracy Comparison for k={self.k}")
         plt.ylabel("accuracy (%)")
         plt.show()
-
 
 if __name__ == '__main__':
     # create instance of class
